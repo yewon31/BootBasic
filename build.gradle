@@ -24,17 +24,20 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf' // 타임리프 뷰
-    implementation 'org.springframework.boot:spring-boot-starter-web' // 부트 web모듈
-    compileOnly 'org.projectlombok:lombok' // 롬복
-    developmentOnly 'org.springframework.boot:spring-boot-devtools' // 부트 dev모듈
-    annotationProcessor 'org.projectlombok:lombok' // 롬복
-    testImplementation 'org.springframework.boot:spring-boot-starter-test' // 테스트
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf' //타임리프 뷰
+    implementation 'org.springframework.boot:spring-boot-starter-web' //부트 web모듈
+    compileOnly 'org.projectlombok:lombok' //롬복
+    developmentOnly 'org.springframework.boot:spring-boot-devtools' //부트 dev모듈
+    annotationProcessor 'org.projectlombok:lombok' //롬복
+    testImplementation 'org.springframework.boot:spring-boot-starter-test' //테스트
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
-    // jsp를 뷰로 사용
-    //implementation 'org.apache.tomcat.embed:tomcat-embed-jasper:9.0.83'
-    //implementation 'javax.servlet:jstl:1.2'
+    //jsp를 뷰로 사용하려면
+//	implementation 'org.apache.tomcat.embed:tomcat-embed-jasper:9.0.83'
+//	implementation 'javax.servlet:jstl:1.2'
+
+    implementation 'org.springframework.boot:spring-boot-starter-validation:2.7.18' //유효성검증
+
 }
 
 tasks.named('test') {
