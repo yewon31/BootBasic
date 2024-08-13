@@ -1,14 +1,17 @@
 package com.simple.basic.controller;
 
+
+import com.simple.basic.command.MemoVO;
 import com.simple.basic.command.TestVO;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import javax.validation.Valid;
+import java.util.*;
 
 @RestController //Controller + ResponseBody(컨트롤러에서 응답을 요청이 들어온곳으로 바꿈) 합성어
 public class RestBasicController {
@@ -17,10 +20,9 @@ public class RestBasicController {
     public String hello() {
         return "이게 무야??"; //요청을 보낸곳으로 응답하게 됩니다.
     }
-
     @GetMapping("/hello2")
     public String[] hello2() {
-        return new String[]{"홍", "길", "동"}; //요청을 보낸곳으로 응답하게 됩니다.
+        return new String[] {"홍", "길", "동"}; //요청을 보낸곳으로 응답하게 됩니다.
     }
 
     ////////////////////////////////////////////////////////////////////////
@@ -37,7 +39,7 @@ public class RestBasicController {
     @GetMapping("/getData")
     public String getData(@RequestParam("num") int num,
                           @RequestParam("name") String name) {
-        System.out.println(num + ", " + name);
+        System.out.println(num + ", " + name );
         return "getData";
     }
 
@@ -74,7 +76,7 @@ public class RestBasicController {
     //form형식으로 데이터 전송 - 소비자 데이터를 Form형식으로 반드시 만들어서 보내야 함
     //http://localhost:8181/getForm
     @PostMapping("/getForm")
-    public String getForm(TestVO vo) {
+    public String getForm( TestVO vo ) {
         System.out.println(vo.toString());
         return "success";
     }
@@ -89,7 +91,7 @@ public class RestBasicController {
 //        return "success";
 //    }
     @PostMapping("/getJSON")
-    public String getJSON(@RequestBody Map<String, Object> map) {
+    public String getJSON( @RequestBody Map<String, Object> map) {
         System.out.println(map.toString());
         return "success";
     }
@@ -100,29 +102,76 @@ public class RestBasicController {
     //producer - 내가 이타입으로 줄게!!
     //기본값은 - "application/json" 입니다.
     @PostMapping(value = "/getResult", produces = "text/html", consumes = "text/plain")
-    public String getResult(@RequestBody String str) {
+    public String getResult( @RequestBody String str ) {
         System.out.println(str);
         return "<h3>문자열</h3>";
     }
 
     ///////////////////////////////////////////////////////////////////////////////
     //응답문서 명확하게 작성하기 ResponseEntity<데이터타입>
+    @CrossOrigin({"http://127.0.0.1:5500", "http://localhost:5500"})
     @PostMapping("/getEntity")
-    public ResponseEntity<TestVO> getEntity() {
+    public ResponseEntity<TestVO> getEntity( @RequestBody TestVO v) {
+
+        System.out.println("받은 데이터:" + v.toString());
 
         TestVO vo = new TestVO(1, "홍길동", 20, "서울시");
 
         //1st
+        //ResponseEntity entity = new ResponseEntity(HttpStatus.BAD_REQUEST);
         //ResponseEntity entity = new ResponseEntity(vo, HttpStatus.BAD_REQUEST);
 
         //2nd
         HttpHeaders header = new HttpHeaders();
-        header.add("Authorization", "Bearer JSON WEB TOKEN~"); //키, 값
+        header.add("Authorization", "Bearer JSON WEB TOKEN~" ); //키, 값
         header.add("Content-Type", "application/json"); //produce와 같은 표현
-        header.add("Access-Control-Allow-Origin", "http://example.com");
+        //header.add("Access-Control-Allow-Origin", "http://example.com");
 
         ResponseEntity entity = new ResponseEntity(vo, header, HttpStatus.OK); //데이터, 헤더, 상태값
         return entity;
     }
+    ///////////////////////////////////////////////////////////////
+    /*
+    요청주소 : /api/v1/getData
+    메서드 : get
+    요청 파라미터 : sno(숫자), name(문자)
+    응답 파라미터 : MemoVO
+    헤더에 담을 내용 HttpStatus.OK
+    fetch API 사용해서 클라이언트에 요청 응답
+    */
+
+    @GetMapping("/api/v1/getData")
+    public ResponseEntity<MemoVO> exampleData(@RequestParam("sno") int sno,
+                                              @RequestParam("name") String name) {
+        System.out.println(sno + ", " + name);
+
+        return new ResponseEntity<MemoVO>(
+                new MemoVO(1L, "홍길동", "1234", null, "Y")
+                , HttpStatus.OK);
+    }
+    /*
+    요청주소 : /api/v1/getInfo
+    메서드 : post
+    요청 파라미터 : MemoVO타입
+    응답 파라미터 : List<MemoVO>타입
+    헤더에 담을 내용 HttpStatus.OK
+    fetch API 사용해서 클라이언트에 요청 응답
+    */
+    @PostMapping("/api/v1/getInfo")
+    public ResponseEntity<List<MemoVO>> getInfo(@RequestBody @Valid MemoVO vo,
+                                                BindingResult binding) {
+        if(binding.hasErrors()) {
+            System.out.println("유효성 검증에 실패함");
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+        //DB....
+        List<MemoVO> list = new ArrayList<>();
+        list.add(vo);
+        return new ResponseEntity<>(list, HttpStatus.OK);
+    }
+
+
+
+
 
 }
