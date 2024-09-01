@@ -8,4 +8,4 @@
 | **데이터베이스** | MySQL 8.0.39 |
 | **ORM** | MyBatis 2.2.0 |
 | **템플릿 엔진** | Thymeleaf |
-| **IDE** | IntelliJ IDEA Community Edition |
+| **IDE** | IntelliJ IDEA |
